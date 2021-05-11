@@ -318,8 +318,13 @@ func TestAgent_HTTPMaxHeaderBytes(t *testing.T) {
 				},
 				Cache: cache.New(cache.Options{}),
 			}
+			bd, err = initEnterpriseBaseDeps(bd, nil)
+			require.NoError(t, err)
+
 			a, err := New(bd)
 			require.NoError(t, err)
+
+			a.startLicenseManager(testutil.TestContext(t))
 
 			srvs, err := a.listenHTTP()
 			require.NoError(t, err)
@@ -5191,8 +5196,14 @@ func TestAgent_ListenHTTP_MultipleAddresses(t *testing.T) {
 		},
 		Cache: cache.New(cache.Options{}),
 	}
+
+	bd, err = initEnterpriseBaseDeps(bd, nil)
+	require.NoError(t, err)
+
 	agent, err := New(bd)
 	require.NoError(t, err)
+
+	agent.startLicenseManager(testutil.TestContext(t))
 
 	srvs, err := agent.listenHTTP()
 	require.NoError(t, err)

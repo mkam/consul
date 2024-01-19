@@ -26,11 +26,11 @@ import (
 )
 
 const (
-	subDir = "hcp-config"
+	SubDir = "hcp-config"
 
 	caFileName      = "server-tls-cas.pem"
 	certFileName    = "server-tls-cert.pem"
-	configFileName  = "server-config.json"
+	ConfigFileName  = "server-config.json"
 	keyFileName     = "server-tls-key.pem"
 	tokenFileName   = "hcp-management-token"
 	successFileName = "successful-bootstrap"
@@ -57,7 +57,7 @@ type RawBootstrapConfig struct {
 
 // fetchBootstrapConfig will fetch boostrap configuration from remote servers and persist it to disk.
 // It will retry until successful or a terminal error condition is found (e.g. permission denied).
-func fetchBootstrapConfig(ctx context.Context, client hcpclient.Client, dataDir string, ui UI) (*RawBootstrapConfig, error) {
+func FetchBootstrapConfig(ctx context.Context, client hcpclient.Client, dataDir string, ui UI) (*RawBootstrapConfig, error) {
 	w := retry.Waiter{
 		MinWait: 1 * time.Second,
 		MaxWait: 5 * time.Minute,
@@ -114,7 +114,7 @@ func persistAndProcessConfig(dataDir string, devMode bool, bsCfg *hcpclient.Boot
 	}
 
 	// Create subdir if it's not already there.
-	dir := filepath.Join(dataDir, subDir)
+	dir := filepath.Join(dataDir, SubDir)
 	if err := lib.EnsurePath(dir, true); err != nil {
 		return "", fmt.Errorf("failed to ensure directory %q: %w", dir, err)
 	}
@@ -249,17 +249,17 @@ func persistManagementToken(dir, token string) error {
 func persistBootstrapConfig(dir, cfgJSON string) error {
 	// Persist the important bits we got from bootstrapping. The TLS certs are
 	// already persisted, just need to persist the config we are going to add.
-	name := filepath.Join(dir, configFileName)
+	name := filepath.Join(dir, ConfigFileName)
 	return os.WriteFile(name, []byte(cfgJSON), 0600)
 }
 
-func loadPersistedBootstrapConfig(dataDir string, ui UI) (*RawBootstrapConfig, bool) {
+func LoadPersistedBootstrapConfig(dataDir string, ui UI) (*RawBootstrapConfig, bool) {
 	if dataDir == "" {
 		// There's no files to load when in dev mode.
 		return nil, false
 	}
 
-	dir := filepath.Join(dataDir, subDir)
+	dir := filepath.Join(dataDir, SubDir)
 
 	_, err := os.Stat(filepath.Join(dir, successFileName))
 	if os.IsNotExist(err) {
@@ -295,7 +295,7 @@ func loadPersistedBootstrapConfig(dataDir string, ui UI) (*RawBootstrapConfig, b
 }
 
 func loadBootstrapConfigJSON(dataDir string) (string, error) {
-	filename := filepath.Join(dataDir, subDir, configFileName)
+	filename := filepath.Join(dataDir, SubDir, ConfigFileName)
 
 	_, err := os.Stat(filename)
 	if os.IsNotExist(err) {

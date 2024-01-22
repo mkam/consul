@@ -1292,9 +1292,7 @@ func (a *Agent) listenHTTP() ([]apiServer, error) {
 	}
 
 	httpAddrs := a.config.HTTPAddrs
-	if a.config.IsCloudEnabled() {
-		httpAddrs = append(httpAddrs, scada.CAPCoreAPI)
-	}
+	httpAddrs = append(httpAddrs, scada.CAPCoreAPI)
 
 	if err := start("http", httpAddrs); err != nil {
 		closeListeners(ln)
